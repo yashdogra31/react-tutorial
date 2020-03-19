@@ -10,10 +10,11 @@ import Person from './Person/Person';
 class App extends Component {
   state = {
     persons : [
-      {name:'Max',age:28},
-      {name:'Manu',age:29},
-      {name:'Stephanie',age:30}
-    ]
+      {id:"ax1",name:'Max',age:28},
+      {id:"ax2",name:'Manu',age:29},
+      {id:"ax3",name:'Stephanie',age:30}
+    ],
+    showPerson : false
   }
 
   switchNameHandler = (name) => {
@@ -27,18 +28,111 @@ class App extends Component {
     ]});
   }
 
+
+  nameChangedHandler = (event,id) => {
+    const personIndex=this.state.persons.findIndex(p=>{ 
+      return p.id===id
+    });
+
+    //const person=Object.assign({},this.state.persons[personIndex]);
+    const person={...this.state.persons[personIndex]};
+    person.name=event.target.value;
+
+    const persons=[...this.state.persons];
+    persons[personIndex]=person;
+  
+    
+    this.setState({persons : persons});
+  }
+
+  toogelPersonHandler = () => {
+    var doesShow=this.state.showPerson;
+    this.setState({showPerson:!doesShow});
+  }
+
+  deletePersonHandler = (index) => {
+    //const persons=this.state.persons;
+    //we should not use it like this as arrays in object are referenced. so we are dealing with orginal state data.
+    //we should not mutate it. ALWAYS make a copy .ie. update state immutably.
+
+    const persons=this.state.persons.slice();
+    //slice() with no argument will create a copy of the array.
+    // we can also use ES6 spred operator
+    // const persons=[...this.state.persons];
+    
+    persons.splice(index,1);
+    // we did not update a const here. array in object are referenced. 
+    //const person is just pointer.we have made it to point to a new element using splice()
+    this.setState({persons:persons});
+  }
+
+  
   render() {
+    //Begin : #1.ALTERNATIVE(preffered) Handling Dynamic Content "The JavaScript Way"
+    let persons=null;
+    if(this.state.showPerson)
+    {
+      persons=(
+        this.state.persons.map((person,index)=>{
+          return <Person name={person.name}
+          age={person.age}
+          key={person.id}
+          click={() => this.deletePersonHandler(index)}
+          changed={(event) => this.nameChangedHandler(event,person.id)}/>
+        })
+      //   <div>
+      // <Person 
+      // name={this.state.persons[0].name} 
+      // age={this.state.persons[0].age}
+      // click={this.switchNameHandler.bind(this,'Max!!!')}
+      // changed={this.nameChangedHandler}/>
+      // <Person name={this.state.persons[1].name} age={this.state.persons[1].age}>My Hobbies: Racing</Person>
+      // <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>
+      // </div>
+      );
+      
+    }
+    //End
+
+    const classes=[];
+    if(this.state.persons.length >=2)
+    {
+      classes.push('red');
+    }
+    if(this.state.persons.length >=1)
+    {
+      classes.push('bold');
+    }
+
+
   return (
     <div className="App">
       <h1>Hi, I'm a React App</h1>
-      <p>This is really working</p>
-      <button onClick={this.switchNameHandler.bind(this,'Maximillan!!')}>Switch Name</button>
+      <p className={classes.join(' ')}>This is really working</p>
+      <button 
+      className="button"
+      onClick={this.toogelPersonHandler}>Toggle Persons</button>
+    
+    {
+    //Begin : #1.ALTERNATIVE(preffered) Handling Dynamic Content "The JavaScript Way"
+      persons
+    //end
+     }
+
+     {//Begin : #1. Rendering Content Conditionally
+     /* { this.state.showPerson ? 
+      <div>
       <Person 
       name={this.state.persons[0].name} 
       age={this.state.persons[0].age}
-      click={this.switchNameHandler.bind(this,'Max!!!')}/>
+      click={this.switchNameHandler.bind(this,'Max!!!')}
+      changed={this.nameChangedHandler}/>
       <Person name={this.state.persons[1].name} age={this.state.persons[1].age}>My Hobbies: Racing</Person>
       <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>
+      </div> : null
+      } */
+      //end
+      }
     </div>
     );
     //Don't use () with switchNameHandler with onClick as javaScript will call it when its rendering the JSX since () means call.
@@ -54,3 +148,4 @@ class App extends Component {
 }
 
 export default App;
+
