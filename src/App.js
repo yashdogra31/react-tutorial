@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import classes from './App.css';
 import Person from './Person/Person';
 //import your components starting with uppercase as React preserves lowercase for html components
 
@@ -70,6 +70,7 @@ class App extends Component {
   render() {
     //Begin : #1.ALTERNATIVE(preffered) Handling Dynamic Content "The JavaScript Way"
     let persons=null;
+    let btncls=[classes.Button];
     if(this.state.showPerson)
     {
       persons=(
@@ -91,26 +92,27 @@ class App extends Component {
       // </div>
       );
       
+      btncls.push(classes.Red);
     }
     //End
 
-    const classes=[];
+    const assignedClasses=[];
     if(this.state.persons.length >=2)
     {
-      classes.push('red');
+      assignedClasses.push(classes.red);
     }
     if(this.state.persons.length >=1)
     {
-      classes.push('bold');
+      assignedClasses.push(classes.bold);
     }
 
 
   return (
-    <div className="App">
+    <div className={classes.App}>
       <h1>Hi, I'm a React App</h1>
-      <p className={classes.join(' ')}>This is really working</p>
+      <p className={assignedClasses.join(' ')}>This is really working</p>
       <button 
-      className="button"
+      className={btncls.join(' ')}
       onClick={this.toogelPersonHandler}>Toggle Persons</button>
     
     {
